@@ -1,0 +1,16 @@
+name: measurer
+description: A widget that measure the size of its child.
+version: 1.0.0
+homepage: https://github.com/aloisdeniel/measurer
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
