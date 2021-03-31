@@ -1,3 +1,7 @@
+## [2.1.0] 
+
+* Added `onConstraintsChanged`.
+
 ## [2.0.0] 
 
 * Added null-safety compatibility.

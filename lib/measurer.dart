@@ -18,6 +18,7 @@ class Measurer extends SingleChildRenderObjectWidget {
     Key? key,
     this.onMeasure,
     this.onPaintBoundsChanged,
+    this.onConstraintsChanged,
     required Widget child,
   }) : super(key: key, child: child);
 
@@ -29,11 +30,15 @@ class Measurer extends SingleChildRenderObjectWidget {
   /// its paint bounds on the screen.
   final OnPaintBoundsChanged? onPaintBoundsChanged;
 
+  /// A callback that is called whenever the current constraints changed.
+  final OnConstraintsChanged? onConstraintsChanged;
+
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _MeasureSizeRenderObject(
       onMeasure: onMeasure,
       onPaintBoundsChanged: onPaintBoundsChanged,
+      onConstraintsChanged: onConstraintsChanged,
     );
   }
 }
@@ -41,6 +46,11 @@ class Measurer extends SingleChildRenderObjectWidget {
 /// When a [size] or its associated [constraints] changed.
 typedef OnMeasure = void Function(
   Size size,
+  BoxConstraints? constraints,
+);
+
+/// When [constraints] changed.
+typedef OnConstraintsChanged = void Function(
   BoxConstraints? constraints,
 );
 
@@ -54,10 +64,12 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
   _MeasureSizeRenderObject({
     required this.onMeasure,
     required this.onPaintBoundsChanged,
+    required this.onConstraintsChanged,
   });
 
   final OnMeasure? onMeasure;
   final OnPaintBoundsChanged? onPaintBoundsChanged;
+  final OnConstraintsChanged? onConstraintsChanged;
 
   Size? _size;
   BoxConstraints? _constraints;
@@ -68,6 +80,7 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
     super.performLayout();
 
     var measureChanged = false;
+    var constraintsChanged = false;
     var paintBoundsChanged = false;
 
     final newSize = child?.size ?? Size.zero;
@@ -80,6 +93,7 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
     if (_constraints != newConstraints) {
       _constraints = newConstraints;
       measureChanged = true;
+      constraintsChanged = true;
     }
 
     final newPaintBounds = child?.paintBounds ?? Rect.zero;
@@ -91,11 +105,16 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
     measureChanged = onMeasure != null && measureChanged;
     paintBoundsChanged = onPaintBoundsChanged != null && paintBoundsChanged;
 
-    if (measureChanged || paintBoundsChanged) {
+    if (measureChanged || paintBoundsChanged || constraintsChanged) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         if (measureChanged) {
           onMeasure!.call(
             _size!,
+            _constraints,
+          );
+        }
+        if (constraintsChanged) {
+          onConstraintsChanged!.call(
             _constraints,
           );
         }
