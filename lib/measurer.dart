@@ -108,18 +108,18 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
     if (measureChanged || paintBoundsChanged || constraintsChanged) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         if (measureChanged) {
-          onMeasure!.call(
+          onMeasure?.call(
             _size!,
             _constraints,
           );
         }
         if (constraintsChanged) {
-          onConstraintsChanged!.call(
+          onConstraintsChanged?.call(
             _constraints,
           );
         }
         if (paintBoundsChanged) {
-          onPaintBoundsChanged!.call(
+          onPaintBoundsChanged?.call(
             _paintBounds!,
           );
         }
